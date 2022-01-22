@@ -7,15 +7,8 @@
 #ifndef HAILMAKER_HTTPSERVER_UTIL_LOG_H_
 #define HAILMAKER_HTTPSERVER_UTIL_LOG_H_
 
-//const (
-//LOG_FATAL   = LogType(0x1)
-//LOG_ERROR   = LogType(0x2)
-//LOG_WARNING = LogType(0x4)
-//LOG_INFO    = LogType(0x8)
-//LOG_DEBUG   = LogType(0x10)
-//)
-
 #include <stdio.h>
+#include <stdlib.h>
 
 enum class LOG_LEVEL {
   FATAL, ERROR, WARNING, INFO, DEBUG
@@ -31,7 +24,8 @@ enum class LOG_LEVEL {
 #define _LOG_FATAL
 #ifdef _LOG_FATAL
 #define LOG_FATAL(format, ...) \
-                  _DEBUG("\033[0m\033[1;31mLOG_FATAL: \033[0m" format,##__VA_ARGS__)
+                  _DEBUG("\033[0m\033[1;31mLOG_FATAL: \033[0m" format,##__VA_ARGS__);\
+                    exit(1);
 #else
 #define LOG_FATAL(format, ...)
 #endif
