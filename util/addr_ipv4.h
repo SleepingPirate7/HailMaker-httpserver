@@ -9,18 +9,20 @@
 
 #include <string>
 #include "utils.h"
-namespace hailmaker {
+
 class AddrIpv4 {
  public:
+  AddrIpv4() = default;
   explicit AddrIpv4(uint16_t port);
   AddrIpv4(const std::string &addr, uint16_t port);
 
   void SetAddr(const struct sockaddr_in &net_addr);
-  const struct sockaddr_in& GetAddr();
-  void GetStandardAddr();
+  const struct sockaddr_in &GetAddr();
+  const struct sockaddr *GetStandardAddr();
+  size_t GetAddrLen();
  private:
   sockaddr_in addr_;
 };
-} // namespace hailmaker
+
 
 #endif //HAILMAKER_HTTPSERVER_UTIL_ADDR_IPV4_H_

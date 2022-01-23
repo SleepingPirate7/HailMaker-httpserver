@@ -1,14 +1,17 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.5)
 project(HailMaker_httpserver)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(HailMaker_httpserver main.cpp util/utils.cpp util/utils.h util/addr_ipv4.cpp util/addr_ipv4.h util/log.h util/types.h net/event_loop.cpp net/event_loop.h net/channel.cpp net/channel.h net/epoller.cpp net/epoller.h)
+add_executable(HailMaker_httpserver main.cpp util/utils.cpp util/utils.h util/addr_ipv4.cpp util/addr_ipv4.h util/log.h net/event_loop.cpp net/event_loop.h net/channel.cpp net/channel.h net/epoller.cpp net/epoller.h net/socket.h net/socket.cpp)
 
 target_include_directories(HailMaker_httpserver PUBLIC util net)
 
-add_executable(test test/test_event_loop.cpp util/utils.cpp util/utils.h util/addr_ipv4.cpp util/addr_ipv4.h util/log.h util/types.h net/event_loop.cpp net/event_loop.h net/channel.cpp net/channel.h net/epoller.cpp net/epoller.h)
-target_include_directories(test PUBLIC util net)
+add_executable(test_server test/server.cpp util/utils.cpp util/utils.h util/addr_ipv4.cpp util/addr_ipv4.h util/log.h net/event_loop.cpp net/event_loop.h net/channel.cpp net/channel.h net/epoller.cpp net/epoller.h net/socket.h net/socket.cpp)
+target_include_directories(test_server PUBLIC util net)
+
+add_executable(test_client util/utils.cpp util/utils.h util/addr_ipv4.cpp util/addr_ipv4.h util/log.h net/event_loop.cpp net/event_loop.h net/channel.cpp net/channel.h net/epoller.cpp net/epoller.h net/socket.h net/socket.cpp test/client.cpp)
+target_include_directories(test_client PUBLIC util net)
 
 #include(FetchContent)
 #FetchContent_Declare(

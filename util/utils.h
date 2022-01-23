@@ -9,9 +9,8 @@
 
 #include <arpa/inet.h>
 #include "log.h"
-#include "types.h"
 
-namespace hailmaker::sockets {
+
 
 uint64_t HostToNet64(uint64_t);
 uint16_t HostToNet16(uint16_t);
@@ -20,6 +19,5 @@ uint16_t NetToHost16(uint16_t);
 
 void HostAddrToNet(const char *src,sockaddr_in *dst);
 
-} // namespace hailmaker::sockets
 
 #endif //HAILMAKER_HTTPSERVER_UTIL_UTILS_H_
