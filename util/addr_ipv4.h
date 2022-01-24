@@ -20,6 +20,7 @@ class AddrIpv4 {
   const struct sockaddr_in &GetAddr();
   const struct sockaddr *GetStandardAddr();
   size_t GetAddrLen();
+  std::string ToString();
  private:
   sockaddr_in addr_;
 };

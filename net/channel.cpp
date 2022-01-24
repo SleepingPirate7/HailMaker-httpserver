@@ -23,5 +23,12 @@ void Channel::RemoveFromPoller() {
 }
 
 void Channel::HandleEvent() {
-
+  handling_event_ = true;
+  if (revent_ & EPOLLIN) {
+    if (read_callback_)read_callback_();
+  }
+  if (revent_ & EPOLLOUT) {
+    if (write_callback_)write_callback_();
+  }
+  handling_event_ = false;
 }

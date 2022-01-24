@@ -17,7 +17,7 @@ class Channel {
  public:
   enum class ChannelStatus { POLLING, DELETED };
   using CallBack = std::function<void()>;
-  explicit Channel(EventLoop *loop,int fd);
+  explicit Channel(EventLoop *loop, int fd);
 
   inline void SetReadCallBack(CallBack r_cb) {
     read_callback_ = std::move(r_cb);
@@ -43,15 +43,15 @@ class Channel {
     Update();
   }
 
-  inline int GetEvent() const {
+  inline uint32_t GetEvent() const {
     return events_;
   }
 
-  inline int GetFd()const{
+  inline int GetFd() const {
     return fd_;
   }
 
-  inline void SetRevent(int event) {
+  inline void SetRevent(uint32_t event) {
     revent_ = event;
   }
 
@@ -70,9 +70,10 @@ class Channel {
   void HandleEvent();
  private:
   int fd_;
-  int events_;
-  int revent_;
+  uint32_t events_;
+  uint32_t revent_;
   EventLoop *loop_;
+  bool handling_event_;
   ChannelStatus status_;
   CallBack read_callback_;
   CallBack write_callback_;

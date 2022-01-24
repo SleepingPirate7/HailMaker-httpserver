@@ -33,7 +33,6 @@ class Socket {
     return fd_;
   }
  private:
-
   int fd_;
   bool is_passive_;
 };

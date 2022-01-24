@@ -8,7 +8,6 @@
 #include <cstring>
 #include <utils.h>
 
-
 AddrIpv4::AddrIpv4(uint16_t port) {
   bzero(&addr_, sizeof(addr_));
   addr_.sin_family = AF_INET;
@@ -37,6 +36,17 @@ const struct sockaddr *AddrIpv4::GetStandardAddr() {
 
 size_t AddrIpv4::GetAddrLen() {
   return sizeof(addr_);
+}
+
+std::string AddrIpv4::ToString() {
+  std::string res;
+  auto addr = new char[INET_ADDRSTRLEN];
+  inet_ntop(AF_INET, &addr_.sin_addr, addr, INET_ADDRSTRLEN);
+  res.append(addr);
+  auto port = ntohs(addr_.sin_port);
+  res.append(":");
+  res.append(std::to_string(port));
+  return res;
 }
 
 

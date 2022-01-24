@@ -18,8 +18,11 @@ void EventLoop::loop() {
   looping_ = true;
   while (!exit_) {
     auto events = poller_->Poll();
+    for (auto &iter : events) {
+      iter->HandleEvent();
+    }
   }
-  LOG_DEBUG("Hello!!");
+  LOG_DEBUG("event loop exit");
   looping_ = false;
 }
 

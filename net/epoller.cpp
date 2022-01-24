@@ -22,6 +22,7 @@ std::vector<Channel *> Epoller::Poll() {
   if (ret > 0) {
     for (int i = 0; i < ret; i++) {
       auto channel = (Channel *) events_[i].data.ptr;
+      channel->SetRevent(events_[i].events);
       res.push_back(channel);
     }
   } else {
