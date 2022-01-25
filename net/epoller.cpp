@@ -20,6 +20,7 @@ std::vector<Channel *> Epoller::Poll() {
 
   auto ret = epoll_wait(epoll_fd_, events_, MAX_EVENTS, -1);
   if (ret > 0) {
+    LOG_INFO("polled %d events", ret);
     for (int i = 0; i < ret; i++) {
       auto channel = (Channel *) events_[i].data.ptr;
       channel->SetRevent(events_[i].events);
@@ -38,6 +39,7 @@ void Epoller::UpdateChannel(Channel *channel) {
     event.data.ptr = channel;
     event.events = channel->GetEvent();
     epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, channel->GetFd(), &event);
+    channel->SetChannelStatus(Channel::ChannelStatus::POLLING);
   } else {
     struct epoll_event event{};
     event.data.ptr = channel;

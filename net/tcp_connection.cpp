@@ -5,3 +5,13 @@
 // https://opensource.org/licenses/MIT
 
 #include "tcp_connection.h"
+
+TcpConnection::TcpConnection(uint64_t id, Socket sock, AddrIpv4 addr, EventLoop *loop)
+    : id_(id), sock_(sock), peer_addr_(addr), loop_(loop) {
+}
+
+void TcpConnection::CloseConnection() {
+  // TODO
+  sock_.Close();
+}
+
