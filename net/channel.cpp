@@ -24,6 +24,7 @@ void Channel::RemoveFromPoller() {
 
 void Channel::HandleEvent() {
   handling_event_ = true;
+  LOG_DEBUG("HandleEvent");
   if (revent_ & EPOLLIN) {
     if (read_callback_)read_callback_();
   }

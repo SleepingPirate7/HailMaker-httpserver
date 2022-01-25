@@ -9,20 +9,28 @@
 
 TcpConnectionManager::TcpConnectionManager() : reactor_(new EventLoop),
                                                acceptor_(Socket(), reactor_) {
-  acceptor_.SetConnCallback(std::bind(&TcpConnectionManager::NetConnection,
+  acceptor_.SetConnCallback(std::bind(&TcpConnectionManager::NewConnection,
                                       this,
                                       std::placeholders::_1,
                                       std::placeholders::_2));
 }
 
-void TcpConnectionManager::NetConnection(Socket client_sock, AddrIpv4 addr) {
+void TcpConnectionManager::NewConnection(Socket client_sock, AddrIpv4 addr) {
   // TODO
   auto conn = std::make_shared<TcpConnection>(next_conn_id_,
                                               client_sock,
                                               addr,
                                               reactor_);
+
+  // FIXME simple test now.Will be set a real on message callback by upper user.
+  conn->SetOnMessageCallback([](const std::shared_ptr<TcpConnection> conn, char *buf) {
+    LOG_INFO("Message from client:%s", buf);
+    conn->Send(buf);
+  });
+
   conn_map_[next_conn_id_] = conn;
   next_conn_id_++;
+  conn->ConnectionEstablished();
 }
 
 void TcpConnectionManager::Start(AddrIpv4 addr) {

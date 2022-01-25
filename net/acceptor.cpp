@@ -7,6 +7,7 @@
 #include "acceptor.h"
 Acceptor::Acceptor(Socket sock, EventLoop *loop) : listening_socket_(sock),
                                                    channel_(loop, sock.GetFd()) {
+  listening_socket_.SetReuse();
   channel_.SetReadCallBack(std::bind(&Acceptor::HandleRead, this));
 }
 
