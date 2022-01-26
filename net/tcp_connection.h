@@ -13,13 +13,14 @@
 #include "addr_ipv4.h"
 #include "channel.h"
 class EventLoop;
+class TcpConnectionManager;
 
 // TcpConnection's lift time is managed by TcpConnectionManager
 class TcpConnection : public std::enable_shared_from_this<TcpConnection> {
  public:
   using CallBack = std::function<void(std::shared_ptr<TcpConnection>, char *)>;
 
-  TcpConnection(uint64_t id, Socket sock, AddrIpv4 addr, EventLoop *loop);
+  TcpConnection(uint64_t id, Socket sock, AddrIpv4 addr, EventLoop *loop,TcpConnectionManager *manager);
 
   void CloseConnection();
   void Send(char *);
@@ -39,6 +40,7 @@ class TcpConnection : public std::enable_shared_from_this<TcpConnection> {
   EventLoop *loop_;
   Channel channel_;
   CallBack on_message_callback_;
+  TcpConnectionManager *manager_;
 };
 
 #endif //HAILMAKER_HTTPSERVER_NET_TCP_CONNECTION_H_

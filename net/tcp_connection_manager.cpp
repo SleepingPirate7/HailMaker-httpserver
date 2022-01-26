@@ -20,7 +20,7 @@ void TcpConnectionManager::NewConnection(Socket client_sock, AddrIpv4 addr) {
   auto conn = std::make_shared<TcpConnection>(next_conn_id_,
                                               client_sock,
                                               addr,
-                                              reactor_);
+                                              reactor_, this);
 
   // FIXME simple test now.Will be set a real on message callback by upper user.
   conn->SetOnMessageCallback([](const std::shared_ptr<TcpConnection> conn, char *buf) {
@@ -40,4 +40,11 @@ void TcpConnectionManager::Start(AddrIpv4 addr) {
 
 TcpConnectionManager::~TcpConnectionManager() {
   delete reactor_;
+}
+
+void TcpConnectionManager::DeleteFromMap(uint64_t id) {
+  std::scoped_lock lock_guard(mu_);
+  if (conn_map_.count(id)) {
+    conn_map_.erase(id);
+  }
 }

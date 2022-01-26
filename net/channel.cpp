@@ -19,7 +19,7 @@ void Channel::Update() {
 }
 
 void Channel::RemoveFromPoller() {
-
+  // TODO
 }
 
 void Channel::HandleEvent() {

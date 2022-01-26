@@ -6,16 +6,24 @@
 
 #include <cstring>
 #include "tcp_connection.h"
+#include "tcp_connection_manager.h"
 
-TcpConnection::TcpConnection(uint64_t id, Socket sock, AddrIpv4 addr, EventLoop *loop)
-    : id_(id), sock_(sock), peer_addr_(addr), loop_(loop), channel_(loop_, sock_.GetFd()) {
+TcpConnection::TcpConnection(uint64_t id, Socket sock, AddrIpv4 addr, EventLoop *loop, TcpConnectionManager *manager)
+    : id_(id),
+      sock_(sock),
+      peer_addr_(addr),
+      loop_(loop),
+      channel_(loop_, sock_.GetFd()),
+      manager_(manager) {
   channel_.SetReadCallBack(std::bind(&TcpConnection::HandleRead, this));
   // channel_.EnableReading();
 }
 
 void TcpConnection::CloseConnection() {
   // TODO
+  channel_.RemoveFromPoller();
   sock_.Close();
+  manager_->DeleteFromMap(id_);
 }
 
 void TcpConnection::HandleRead() {
@@ -25,9 +33,11 @@ void TcpConnection::HandleRead() {
   auto n = sock_.Read(buf, SIZE);
   if (n > 0) {
     LOG_DEBUG("TcpConnection::HandleRead()");
+    shared_from_this();
     on_message_callback_(shared_from_this(), buf);
   } else if (n == 0) {
     LOG_DEBUG("client close the connection!");
+    CloseConnection();
   } else {
     LOG_FATAL("TcpConnection::HandleRead");
   }

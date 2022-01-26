@@ -32,14 +32,34 @@ class Channel {
     Update();
   }
 
+  inline void DisableReading() {
+    events_ &= ~EPOLLIN;
+    Update();
+  }
+
   inline void EnableWriting() {
+    is_writing_ = true;
     events_ |= EPOLLOUT;
     Update();
   }
 
+  inline void DisableWriting() {
+    is_writing_ = false;
+    events_ &= ~EPOLLOUT;
+    Update();
+  }
+
   inline void EnableReadingAndWriting() {
+    is_writing_ = true;
     events_ |= EPOLLIN;
     events_ |= EPOLLOUT;
+    Update();
+  }
+
+  inline void DisableReadingAndWriting() {
+    is_writing_ = false;
+    events_ &= ~EPOLLIN;
+    events_ &= ~EPOLLOUT;
     Update();
   }
 
@@ -49,6 +69,10 @@ class Channel {
 
   inline int GetFd() const {
     return fd_;
+  }
+
+  inline bool IsWriting() {
+    return is_writing_;
   }
 
   inline void SetRevent(uint32_t event) {
@@ -63,7 +87,7 @@ class Channel {
     status_ = net_status;
   }
 
-  inline void RemoveFromPoller();
+  void RemoveFromPoller();
 
   void Update();
 
@@ -74,6 +98,7 @@ class Channel {
   uint32_t revent_;
   EventLoop *loop_;
   bool handling_event_;
+  bool is_writing_;
   ChannelStatus status_;
   CallBack read_callback_;
   CallBack write_callback_;
