@@ -12,14 +12,14 @@
 #include "log.h"
 #include "channel.h"
 #include "socket.h"
+#include "CallBacks.h"
 
 class Acceptor {
  public:
-  using CallBack = std::function<void(Socket, AddrIpv4)>;
 
   Acceptor(Socket sock, EventLoop *loop);
 
-  inline void SetConnCallback(CallBack cb) {
+  inline void SetConnCallback(NewConCallBack cb) {
     new_conn_callback_ = std::move(cb);
   }
 
@@ -28,7 +28,7 @@ class Acceptor {
   void HandleRead();
   Socket listening_socket_;
   Channel channel_;
-  CallBack new_conn_callback_;
+  NewConCallBack new_conn_callback_;
   bool listening_;
 };
 

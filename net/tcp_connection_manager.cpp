@@ -22,14 +22,15 @@ void TcpConnectionManager::NewConnection(Socket client_sock, AddrIpv4 addr) {
                                               addr,
                                               reactor_, this);
 
-  // FIXME simple test now.Will be set a real on message callback by upper user.
-  conn->SetOnMessageCallback([](const std::shared_ptr<TcpConnection> conn, char *buf) {
-    LOG_INFO("Message from client:%s", buf);
-    conn->Send(buf);
-  });
+  // FIXME Is this necessary?
+  conn->SetOnMessageCallback(on_message_callback_);
 
   conn_map_[next_conn_id_] = conn;
   next_conn_id_++;
+
+  // TODO add on connection callback used by upper user(e.g http manager) for further work.
+  // e.g http manager will use this callback to establish a new http connection.
+  on_connection_callback_(conn);
   conn->ConnectionEstablished();
 }
 

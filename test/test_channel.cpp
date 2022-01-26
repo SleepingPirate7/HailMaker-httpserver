@@ -6,12 +6,22 @@
 
 #include <gtest/gtest.h>
 #include "channel.h"
+#include "event_loop.h"
+#include "socket.h"
 
 TEST(TestChannel, BasicAssertions) {
-  // Expect two strings not to be equal.
-  EXPECT_STRNE("hello", "world");
-  // Expect equality.
-  EXPECT_EQ(7 * 6, 42);
+  EventLoop loop;
+  Socket sock;
+  Channel chan(&loop, sock.GetFd());
+  ASSERT_EQ(chan.GetChannelStatus(), Channel::ChannelStatus::DELETED);
+  chan.EnableReading();
+  ASSERT_EQ(chan.GetChannelStatus(), Channel::ChannelStatus::POLLING);
+  chan.EnableWriting();
+  ASSERT_EQ(chan.IsWriting(), true);
+  chan.DisableReadingAndWriting();
+  ASSERT_EQ(chan.IsWriting(), false);
+  chan.RemoveFromPoller();
+  ASSERT_EQ(chan.GetChannelStatus(), Channel::ChannelStatus::DELETED);
 }
 
 

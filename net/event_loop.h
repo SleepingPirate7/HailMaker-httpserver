@@ -20,6 +20,7 @@ class EventLoop {
   ~EventLoop();
   void loop();
   void UpdateChannel(Channel *);
+  void RemoveFromChannel(Channel *);
  private:
   bool exit_;
   bool looping_;

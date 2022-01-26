@@ -20,6 +20,9 @@ void Channel::Update() {
 
 void Channel::RemoveFromPoller() {
   // TODO
+  events_ = 0;
+  revent_ = 0;
+  loop_->RemoveFromChannel(this);
 }
 
 void Channel::HandleEvent() {

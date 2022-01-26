@@ -17,15 +17,17 @@
 
 class TcpConnectionManager {
  public:
-  using CallBack = std::function<void(char *)>;
-
   TcpConnectionManager();
   ~TcpConnectionManager();
 
   void Start(AddrIpv4 addr);
 
-  inline void SetOnMessageCallback(CallBack cb) {
+  inline void SetOnMessageCallback(OnMessageCallBack cb) {
     on_message_callback_ = std::move(cb);
+  }
+
+  inline void SetOnConnectionCallback(OnConnectionCallBack cb) {
+    on_connection_callback_ = std::move(cb);
   }
 
   void DeleteFromMap(uint64_t id);
@@ -37,7 +39,8 @@ class TcpConnectionManager {
   Acceptor acceptor_;
   ConnectionMap conn_map_;
   uint64_t next_conn_id_;
-  CallBack on_message_callback_;
+  OnMessageCallBack on_message_callback_;
+  OnConnectionCallBack on_connection_callback_;
   std::mutex mu_;
 };
 

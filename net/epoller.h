@@ -21,6 +21,7 @@ class Epoller {
   ~Epoller();
   std::vector<Channel *> Poll();
   void UpdateChannel(Channel *);
+  void RemoveFromChannel(Channel *);
  private:
   int epoll_fd_;
   struct epoll_event *events_;

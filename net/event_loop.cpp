@@ -26,11 +26,15 @@ void EventLoop::loop() {
   looping_ = false;
 }
 
+EventLoop::~EventLoop() {
+  assert(!looping_);
+}
+
 void EventLoop::UpdateChannel(Channel *channel) {
   poller_->UpdateChannel(channel);
 }
 
-EventLoop::~EventLoop() {
-  assert(!looping_);
+void EventLoop::RemoveFromChannel(Channel *channel) {
+  poller_->RemoveFromChannel(channel);
 }
 

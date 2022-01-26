@@ -4,6 +4,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+#include <assert.h>
 #include "epoller.h"
 #include "channel.h"
 
@@ -45,6 +46,13 @@ void Epoller::UpdateChannel(Channel *channel) {
     event.data.ptr = channel;
     event.events = channel->GetEvent();
     epoll_ctl(epoll_fd_, EPOLL_CTL_MOD, channel->GetFd(), &event);
+  }
+}
+
+void Epoller::RemoveFromChannel(Channel *channel) {
+  if (channel->GetChannelStatus() == Channel::ChannelStatus::POLLING) {
+    epoll_ctl(epoll_fd_, EPOLL_CTL_DEL, channel->GetFd(), nullptr);
+    channel->SetChannelStatus(Channel::ChannelStatus::DELETED);
   }
 }
 
