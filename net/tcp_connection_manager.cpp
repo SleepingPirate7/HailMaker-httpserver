@@ -30,7 +30,9 @@ void TcpConnectionManager::NewConnection(Socket client_sock, AddrIpv4 addr) {
 
   // TODO add on connection callback used by upper user(e.g http manager) for further work.
   // e.g http manager will use this callback to establish a new http connection.
-  on_connection_callback_(conn);
+  // TODO (update) Do we really need this?
+  // on_connection_callback_(conn);
+
   conn->ConnectionEstablished();
 }
 

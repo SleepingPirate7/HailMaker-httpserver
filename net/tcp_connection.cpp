@@ -23,9 +23,10 @@ TcpConnection::TcpConnection(uint64_t id, Socket sock, AddrIpv4 addr, EventLoop 
 void TcpConnection::CloseConnection() {
   // TODO
   if (output_buf_.empty()) {
+    manager_->DeleteFromMap(id_);
     channel_.RemoveFromPoller();
     sock_.Close();
-    manager_->DeleteFromMap(id_);
+    statue_ = TcpConnectionStatue::Closed;
   } else {
     statue_ = TcpConnectionStatue::Closing;
   }
@@ -90,7 +91,7 @@ void TcpConnection::ConnectionEstablished() {
 }
 
 void TcpConnection::HandleCLose() {
-
+  // TODO
 }
 
 
