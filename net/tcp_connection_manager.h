@@ -17,9 +17,10 @@
 
 class TcpConnectionManager {
  public:
-  TcpConnectionManager();
+  TcpConnectionManager(int thread_num);
   ~TcpConnectionManager();
 
+  // Start working!
   void Start(AddrIpv4 addr);
 
   inline void SetOnMessageCallback(OnMessageCallBack cb) {
@@ -42,6 +43,7 @@ class TcpConnectionManager {
   OnMessageCallBack on_message_callback_;
   OnConnectionCallBack on_connection_callback_;
   std::mutex mu_;
+  int thread_num_;
 };
 
 #endif //HAILMAKER_HTTPSERVER_NET_TCP_CONNECTION_MANAGER_H_

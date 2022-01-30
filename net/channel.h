@@ -27,6 +27,10 @@ class Channel {
     write_callback_ = std::move(w_cb);
   }
 
+  inline void SetCloseCallBack(CallBack c_cb) {
+    close_callback_ = std::move(c_cb);
+  }
+
   inline void EnableReading() {
     events_ |= EPOLLIN;
     Update();
@@ -102,6 +106,7 @@ class Channel {
   ChannelStatus status_;
   CallBack read_callback_;
   CallBack write_callback_;
+  CallBack close_callback_;
 };
 
 #endif //HAILMAKER_HTTPSERVER_NET_CHANNEL_H_

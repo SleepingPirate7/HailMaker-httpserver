@@ -10,11 +10,12 @@
 #include <addr_ipv4.h>
 #include <socket.h>
 #include <memory>
+#include "buffer.h"
 
 class TcpConnection;
 
 using NewConCallBack = std::function<void(Socket, AddrIpv4)>;
-using OnMessageCallBack = std::function<void(std::shared_ptr<TcpConnection>, char *)>;
+using OnMessageCallBack = std::function<void(std::shared_ptr<TcpConnection>, Buffer *)>;
 using OnConnectionCallBack = std::function<void(std::shared_ptr<TcpConnection>)>;
 
 #endif //HAILMAKER_HTTPSERVER_UTIL_CALLBACKS_H_

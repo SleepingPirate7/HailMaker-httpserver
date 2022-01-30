@@ -7,8 +7,9 @@
 #include "tcp_connection_manager.h"
 #include "tcp_connection.h"
 
-TcpConnectionManager::TcpConnectionManager() : reactor_(new EventLoop),
-                                               acceptor_(Socket(), reactor_) {
+TcpConnectionManager::TcpConnectionManager(int thread_num) : reactor_(new EventLoop),
+                                                             acceptor_(Socket(), reactor_),
+                                                             thread_num_(thread_num) {
   acceptor_.SetConnCallback(std::bind(&TcpConnectionManager::NewConnection,
                                       this,
                                       std::placeholders::_1,
@@ -47,7 +48,5 @@ TcpConnectionManager::~TcpConnectionManager() {
 
 void TcpConnectionManager::DeleteFromMap(uint64_t id) {
   std::scoped_lock lock_guard(mu_);
-  if (conn_map_.count(id)) {
-    conn_map_.erase(id);
-  }
+  conn_map_.erase(id);
 }

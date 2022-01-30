@@ -11,7 +11,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest)
 
-add_executable(HailMaker_httpserver main.cpp util/utils.cpp util/utils.h util/addr_ipv4.cpp util/addr_ipv4.h util/log.h net/event_loop.cpp net/event_loop.h net/channel.cpp net/channel.h net/epoller.cpp net/epoller.h net/socket.h net/socket.cpp net/tcp_connection_manager.cpp net/tcp_connection_manager.h net/acceptor.cpp net/acceptor.h net/tcp_connection.cpp net/tcp_connection.h util/callbacks.h http/http_connection_manager.cpp http/http_connection_manager.h net/buffer.h)
+add_executable(HailMaker_httpserver main.cpp util/utils.cpp util/utils.h util/addr_ipv4.cpp util/addr_ipv4.h util/log.h net/event_loop.cpp net/event_loop.h net/channel.cpp net/channel.h net/epoller.cpp net/epoller.h net/socket.h net/socket.cpp net/tcp_connection_manager.cpp net/tcp_connection_manager.h net/acceptor.cpp net/acceptor.h net/tcp_connection.cpp net/tcp_connection.h util/callbacks.h net/buffer.h http/http_server.cpp http/http_server.h)
 
 target_include_directories(HailMaker_httpserver PUBLIC util net)
 
@@ -46,7 +46,7 @@ add_executable(
         net/tcp_connection.cpp
         net/tcp_connection.h
         test/test_channel.cpp
-        test/test_tcp_manager_and_connection.cpp util/callbacks.h http/http_connection_manager.cpp http/http_connection_manager.h net/buffer.h test/test_buffer.cpp)
+        test/test_tcp_manager_and_connection.cpp util/callbacks.h net/buffer.h test/test_buffer.cpp http/http_server.cpp http/http_server.h)
 
 target_link_libraries(
         test_server

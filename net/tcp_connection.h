@@ -13,6 +13,7 @@
 #include "callbacks.h"
 #include "addr_ipv4.h"
 #include "channel.h"
+#include "buffer.h"
 
 class EventLoop;
 class TcpConnectionManager;
@@ -25,7 +26,7 @@ class TcpConnection : public std::enable_shared_from_this<TcpConnection> {
   TcpConnection(uint64_t id, Socket sock, AddrIpv4 addr, EventLoop *loop, TcpConnectionManager *manager);
 
   void CloseConnection();
-  void Send(char *);
+  void Send(char *, size_t);
 
   inline void SetOnMessageCallback(OnMessageCallBack cb) {
     on_message_callback_ = std::move(cb);
@@ -37,13 +38,15 @@ class TcpConnection : public std::enable_shared_from_this<TcpConnection> {
   void HandleRead();
   void HandleWrite();
   void HandleCLose();
+  void CloseAll();
+
   uint64_t id_;
   Socket sock_;
   AddrIpv4 peer_addr_;
   EventLoop *loop_;
   Channel channel_;
-  std::string output_buf_;
-  std::string input_buf_;
+  Buffer output_buf_;
+  Buffer input_buf_;
   OnMessageCallBack on_message_callback_;
   TcpConnectionStatue statue_;
   TcpConnectionManager *manager_;

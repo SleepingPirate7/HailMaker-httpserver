@@ -36,7 +36,8 @@ enum class LOG_LEVEL {
 #else
 #define LOG_FATAL(format, ...)
 #endif
-//#define _LOG_WARNING
+
+#define _LOG_WARNING
 #ifdef _LOG_WARNING
 #define LOG_WARNING(format, ...) \
                   _DEBUG("\033[0m\033[1;33mLOG_WARNING: \033[0m" format,##__VA_ARGS__)
