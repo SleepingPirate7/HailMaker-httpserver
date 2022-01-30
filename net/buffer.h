@@ -46,6 +46,10 @@ class Buffer {
     return Begin() + read_index_;
   }
 
+  inline const char *BeginWrite() {
+    return Begin() + write_index_;
+  }
+
   inline void Retrieve(size_t len) {
     read_index_ += len;
   }
@@ -58,6 +62,11 @@ class Buffer {
   inline std::string RetrieveAsString() {
     std::string res(Peek(), ReadableSize());
     RetrieveAll();
+    return res;
+  }
+
+  inline std::string_view RetrieveStringView() {
+    std::string_view res(Peek(), ReadableSize());
     return res;
   }
 

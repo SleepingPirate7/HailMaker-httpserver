@@ -7,16 +7,24 @@
 #ifndef HAILMAKER_HTTPSERVER_HTTP_HTTP_SERVER_H_
 #define HAILMAKER_HTTPSERVER_HTTP_HTTP_SERVER_H_
 #include <memory>
+#include <unordered_map>
 #include "tcp_connection_manager.h"
+#include "http_request.h"
 
 class HttpServer {
  public:
   HttpServer(int thread_num);
 
   void Start();
+  void Handle(const std::string &, std::string);
+  std::string ReadFileIntoString(std::string);
  private:
-  void OnMessageCallback(std::shared_ptr<TcpConnection>,Buffer *input_buffer);
+  void OnMessageCallback(std::shared_ptr<TcpConnection>, Buffer *input_buffer);
 
+
+
+  std::unordered_map<std::string, std::string> html_context_;
+  std::unordered_map<std::string, std::string> url_path_;
   std::unique_ptr<TcpConnectionManager> tcp_manager_;
 };
 
