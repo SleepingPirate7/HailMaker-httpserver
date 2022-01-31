@@ -8,7 +8,7 @@
 #define HAILMAKER_HTTPSERVER_HTTP_HTTP_REQUEST_H_
 
 #include <string>
-#include "http_server.h"
+#include "buffer.h"
 
 class HttpRequest {
  public:
@@ -17,7 +17,7 @@ class HttpRequest {
   HttpRequest() = default;
 
   bool ParseRequest(Buffer *buffer);
-  bool ParseLine(std::string);
+  bool ParseLine(const char *, const char *);
 
   inline std::string GetMethod() {
     return method_;
@@ -30,8 +30,8 @@ class HttpRequest {
   inline std::string GetVersion_() {
     return version_;
   }
+  bool GotAll();
  private:
-  std::string ParseCRLR(Buffer *);
 
   std::string method_;
   std::string url_;

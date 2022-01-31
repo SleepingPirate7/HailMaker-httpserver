@@ -11,6 +11,8 @@
 #include <string>
 #include <assert.h>
 #include <sys/uio.h>
+#include <csignal>
+#include <iostream>
 #include "log.h"
 
 /*
@@ -65,9 +67,20 @@ class Buffer {
     return res;
   }
 
+  void RetrieveUntil(const char *end) {
+    assert(Peek() <= end);
+    assert(end <= BeginWrite());
+    Retrieve(end - Peek());
+  }
+
   inline std::string_view RetrieveStringView() {
     std::string_view res(Peek(), ReadableSize());
     return res;
+  }
+
+  const char *FindCRLF() {
+    const char *crlf = std::search(Peek(), BeginWrite(), CRLR.data(), CRLR.data() + 2);
+    return crlf == BeginWrite() ? nullptr : crlf;
   }
 
   inline void Append(char *str, size_t len) {
@@ -95,11 +108,14 @@ class Buffer {
       // *savedErrno = errno;
       LOG_WARNING("ReadFd error!");
     } else if (n <= writable) {
+      LOG_DEBUG("Buffer::ReadFd read %zu bytes from fd %d", n, fd);
       write_index_ += n;
+      LOG_DEBUG("Buffer::ReadFd readable size:%zu", ReadableSize());
     } else {
       write_index_ = buf_.size();
       Append(extrabuf, n - writable);
     }
+
     return n;
   }
 
@@ -107,6 +123,10 @@ class Buffer {
     buf_.swap(buf.buf_);
     std::swap(read_index_, buf.read_index_);
     std::swap(write_index_, buf.write_index_);
+  }
+
+  std::string &GetStr() {
+    return str_buf_;
   }
  private:
 
@@ -125,9 +145,11 @@ class Buffer {
     }
   }
 
+  std::string CRLR = "\r\n";
   size_t read_index_;
   size_t write_index_;
   std::vector<char> buf_;
+  std::string str_buf_;
 };
 
 #endif //HAILMAKER_HTTPSERVER_NET_BUFFER_H_

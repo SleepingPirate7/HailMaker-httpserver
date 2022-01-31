@@ -5,51 +5,58 @@
 // https://opensource.org/licenses/MIT
 
 #include <regex>
+#include <iostream>
 #include "http_request.h"
 
 // We assume that http request doesn't contain request body.
 bool HttpRequest::ParseRequest(Buffer *buffer) {
-  bool is_more = true;
-  bool is_request = false;
+  bool has_more = true;
+  bool ok = false;
 
-  while (is_more) {
-    auto line = ParseCRLR(buffer);
-    switch (state_) {
-      case State::PARSE_LINE:
-        if (!ParseLine(line)) {
-          return false;
+  while (has_more) {
+    if (state_ == State::PARSE_LINE) {
+      const char *crlf = buffer->FindCRLF();
+      if (crlf) {
+        ok = ParseLine(buffer->Peek(), crlf);
+        if (ok) {
+          buffer->RetrieveUntil(crlf + 2);
+          state_ = State::PARSE_HEADER;
+        } else {
+          has_more = false;
         }
-        is_request = true;
-        is_more = true;
-        state_ = State::PARSE_HEADER;
-        break;
-      case State::PARSE_HEADER:
-        if (line.empty()) {
-          is_more = false;
+      } else {
+        has_more = false;
+      }
+    } else if (state_ == State::PARSE_HEADER) {
+      const char *crlf = buffer->FindCRLF();
+      if (crlf) {
+        const char *colon = std::find(buffer->Peek(), crlf, ':');
+        if (colon == crlf) {
           state_ = State::PARSE_END;
+          has_more = false;
         }
-        break;
-      case State::PARSE_BODY:
-        // TODO PARSE_BODY
-        is_more = false;
-        break;
-      case State::PARSE_END:
-        // TODO PARSE_END
-        is_more = false;
+        buffer->RetrieveUntil(crlf + 2);
+      } else {
+        has_more = false;
+      }
+
+    } else {
+      // TODO
     }
   }
-  return is_request;
+  return ok;
 }
 
-bool HttpRequest::ParseLine(std::string line) {
+bool HttpRequest::ParseLine(const char *beg, const char *end) {
   // LOG_DEBUG("%s", line.data());
+  std::string line(beg, end);
   std::regex patten("^([^ ]*) ([^ ]*) HTTP/([^ ]*)$");
   std::smatch subMatch;
   if (regex_match(line, subMatch, patten)) {
     method_ = subMatch[1];
     url_ = subMatch[2];
     version_ = subMatch[3];
-    state_ = State::PARSE_END;
+    // state_ = State::PARSE_END;
     // LOG_DEBUG("path:%s", url_.data());
     return true;
   }
@@ -57,14 +64,6 @@ bool HttpRequest::ParseLine(std::string line) {
   return false;
 }
 
-std::string HttpRequest::ParseCRLR(Buffer *buffer) {
-  static std::string_view CRLR = "\r\n";
-
-  auto end = std::search(buffer->Peek(), buffer->BeginWrite(), CRLR.begin(), CRLR.end());
-  if (end == buffer->BeginWrite()) {
-    return {};
-  }
-  std::string str{buffer->Peek(), end};
-  buffer->Retrieve(str.size() + 2);
-  return str;
+bool HttpRequest::GotAll() {
+  return state_ == State::PARSE_END;
 }

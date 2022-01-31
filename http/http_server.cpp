@@ -9,6 +9,7 @@
 #include <utility>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 using std::placeholders::_1;
 using std::placeholders::_2;
 
@@ -17,19 +18,24 @@ HttpServer::HttpServer(int thread_num) : tcp_manager_(new TcpConnectionManager(t
 }
 
 void HttpServer::OnMessageCallback(std::shared_ptr<TcpConnection> conn, Buffer *input_buffer) {
-  // auto str = input_buffer->RetrieveAsString();
-  // LOG_INFO("Receive from client:%s", str.data());
-  // conn->Send(str.data(), str.size());
+//  auto str = input_buffer->RetrieveAsString();
+//  LOG_INFO("Receive from client:%s  size:%d", str.data(), str.size());
+//  std::cout << "          " << str << std::endl;
+//  conn->Send(str.data(), str.size());
+
   HttpRequest request;
   if (request.ParseRequest(input_buffer)) {
-
+    if (request.GotAll()) {
+      std::string str = "!!!!!!!!!!!!!!!!!!!!!!";
+      conn->Send(str.data(), str.size());
+    }
   } else {
-
+    auto str = input_buffer->RetrieveStringView();
+    conn->Send(const_cast<char *>(str.data()), str.size());
   }
 }
 
 void HttpServer::Start() {
-  tcp_manager_->Start(AddrIpv4(6666));
   for (auto &path : url_path_) {
     auto html = ReadFileIntoString(path.second);
     if (html.empty()) {
@@ -37,6 +43,8 @@ void HttpServer::Start() {
     }
     html_context_[path.second] = html;
   }
+
+  tcp_manager_->Start(AddrIpv4(6666));
 }
 
 void HttpServer::Handle(const std::string &url, std::string path) {
@@ -54,6 +62,6 @@ std::string HttpServer::ReadFileIntoString(std::string filename) {
     std::fclose(fp);
     return (contents);
   }
-  throw (errno);
+  LOG_FATAL("HttpServer::ReadFileIntoString()");
 }
 

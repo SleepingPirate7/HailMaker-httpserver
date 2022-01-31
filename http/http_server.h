@@ -17,11 +17,10 @@ class HttpServer {
 
   void Start();
   void Handle(const std::string &, std::string);
-  std::string ReadFileIntoString(std::string);
+
  private:
   void OnMessageCallback(std::shared_ptr<TcpConnection>, Buffer *input_buffer);
-
-
+  std::string ReadFileIntoString(std::string);
 
   std::unordered_map<std::string, std::string> html_context_;
   std::unordered_map<std::string, std::string> url_path_;

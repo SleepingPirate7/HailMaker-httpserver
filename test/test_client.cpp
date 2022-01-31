@@ -1,3 +1,13 @@
+// Copyright (c) 2022 Wenhao Kong
+// https://github.com/WenhaoKong2001
+//
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
+// Copyright (c) 2022 Wenhao Kong
+// https://github.com/WenhaoKong2001
+//
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
 
 #include <iostream>
 #include "addr_ipv4.h"
