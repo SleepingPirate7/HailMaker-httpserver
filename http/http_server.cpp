@@ -10,6 +10,8 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+
+#include "http_response.h"
 using std::placeholders::_1;
 using std::placeholders::_2;
 
@@ -18,20 +20,29 @@ HttpServer::HttpServer(int thread_num) : tcp_manager_(new TcpConnectionManager(t
 }
 
 void HttpServer::OnMessageCallback(std::shared_ptr<TcpConnection> conn, Buffer *input_buffer) {
-//  auto str = input_buffer->RetrieveAsString();
-//  LOG_INFO("Receive from client:%s  size:%d", str.data(), str.size());
-//  std::cout << "          " << str << std::endl;
-//  conn->Send(str.data(), str.size());
-
   HttpRequest request;
   if (request.ParseRequest(input_buffer)) {
     if (request.GotAll()) {
-      std::string str = "!!!!!!!!!!!!!!!!!!!!!!";
-      conn->Send(str.data(), str.size());
+      if (request.GetMethod() == "GET") {
+        if (url_path_.count(request.GetUrl())) {
+          auto context = html_context_[url_path_[request.GetUrl()]];
+          HttpResponse resp(request, "200", "OK", context);
+          conn->Send(resp.GetResponse().data(), resp.GetResponse().size());
+        } else {
+          auto context = html_context_["404"];
+          HttpResponse resp(request, "404", "NOT FOUND", context);
+          conn->Send(resp.GetResponse().data(), resp.GetResponse().size());
+        }
+        conn->CloseConnection();
+      } else {
+        // TODO
+        std::string context = "HTTP/1.1 400 Bad Request\r\n\r\n";
+        conn->Send(context.data(), context.size());
+        conn->CloseConnection();
+      }
     }
   } else {
-    auto str = input_buffer->RetrieveStringView();
-    conn->Send(const_cast<char *>(str.data()), str.size());
+    // TODO bad request
   }
 }
 
@@ -43,8 +54,9 @@ void HttpServer::Start() {
     }
     html_context_[path.second] = html;
   }
-
-  tcp_manager_->Start(AddrIpv4(6666));
+  auto html = ReadFileIntoString("../recourse/404.html");
+  html_context_["404"] = html;
+  tcp_manager_->Start(AddrIpv4(80));
 }
 
 void HttpServer::Handle(const std::string &url, std::string path) {

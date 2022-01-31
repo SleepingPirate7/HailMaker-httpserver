@@ -13,6 +13,7 @@
 #include <sys/uio.h>
 #include <csignal>
 #include <iostream>
+#include <algorithm>
 #include "log.h"
 
 /*

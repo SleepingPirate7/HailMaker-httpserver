@@ -22,7 +22,6 @@ TcpConnection::TcpConnection(uint64_t id, Socket sock, AddrIpv4 addr, EventLoop 
 }
 
 void TcpConnection::CloseConnection() {
-  // TODO
   LOG_DEBUG("[ID:%lu]TcpConnection::CloseConnection", id_);
   if (statue_ != TcpConnectionStatue::Closed && statue_ != TcpConnectionStatue::Closing) {
     if (output_buf_.Empty()) {
