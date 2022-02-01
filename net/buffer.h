@@ -90,7 +90,7 @@ class Buffer {
     write_index_ += len;
   }
 
-  inline bool Empty() {
+  inline bool Empty() const {
     return read_index_ == write_index_;
   }
 

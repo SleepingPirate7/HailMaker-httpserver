@@ -7,8 +7,6 @@
 #include "http_server.h"
 #include <functional>
 #include <utility>
-#include <fstream>
-#include <sstream>
 #include <iostream>
 
 #include "http_response.h"
@@ -19,7 +17,7 @@ HttpServer::HttpServer(int thread_num) : tcp_manager_(new TcpConnectionManager(t
   tcp_manager_->SetOnMessageCallback(std::bind(&HttpServer::OnMessageCallback, this, _1, _2));
 }
 
-void HttpServer::OnMessageCallback(std::shared_ptr<TcpConnection> conn, Buffer *input_buffer) {
+void HttpServer::OnMessageCallback(const std::shared_ptr<TcpConnection>& conn, Buffer *input_buffer) {
   HttpRequest request;
   if (request.ParseRequest(input_buffer)) {
     if (request.GotAll()) {
@@ -35,14 +33,15 @@ void HttpServer::OnMessageCallback(std::shared_ptr<TcpConnection> conn, Buffer *
         }
         conn->CloseConnection();
       } else {
-        // TODO
         std::string context = "HTTP/1.1 400 Bad Request\r\n\r\n";
         conn->Send(context.data(), context.size());
         conn->CloseConnection();
       }
     }
   } else {
-    // TODO bad request
+    std::string context = "HTTP/1.1 400 Bad Request\r\n\r\n";
+    conn->Send(context.data(), context.size());
+    conn->CloseConnection();
   }
 }
 
@@ -56,7 +55,7 @@ void HttpServer::Start() {
   }
   auto html = ReadFileIntoString("../recourse/404.html");
   html_context_["404"] = html;
-  tcp_manager_->Start(AddrIpv4(80));
+  tcp_manager_->Start(AddrIpv4(6666));
 }
 
 void HttpServer::Handle(const std::string &url, std::string path) {

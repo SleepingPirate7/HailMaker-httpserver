@@ -23,7 +23,7 @@ class TcpConnection : public std::enable_shared_from_this<TcpConnection> {
  public:
   enum TcpConnectionStatue { Connecting, Connected, Closing, Closed, };
 
-  TcpConnection(uint64_t id, Socket sock, AddrIpv4 addr, EventLoop *loop, TcpConnectionManager *manager);
+  TcpConnection(uint64_t id, Socket sock, AddrIpv4 addr, EventLoop *loop, TcpConnectionManager *manager,int loop_id);
 
   void CloseConnection();
   void Send(char *, size_t);
@@ -41,6 +41,7 @@ class TcpConnection : public std::enable_shared_from_this<TcpConnection> {
   void CloseAll();
 
   uint64_t id_;
+  int loop_id_;
   Socket sock_;
   AddrIpv4 peer_addr_;
   EventLoop *loop_;

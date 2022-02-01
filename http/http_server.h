@@ -19,7 +19,7 @@ class HttpServer {
   void Handle(const std::string &, std::string);
 
  private:
-  void OnMessageCallback(std::shared_ptr<TcpConnection>, Buffer *input_buffer);
+  void OnMessageCallback(const std::shared_ptr<TcpConnection>&, Buffer *input_buffer);
   std::string ReadFileIntoString(std::string);
 
   std::unordered_map<std::string, std::string> html_context_;

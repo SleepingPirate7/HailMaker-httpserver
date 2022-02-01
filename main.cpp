@@ -6,7 +6,7 @@
 #include "http/http_request.h"
 
 int main() {
-  HttpServer server(1);
+  HttpServer server(4);
   server.Handle("/hello", "../recourse/hello.html");
   server.Start();
 }

@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <utility>
 #include <mutex>
+#include <thread>
 #include "acceptor.h"
 #include "event_loop.h"
 #include "tcp_connection.h"
@@ -35,6 +36,7 @@ class TcpConnectionManager {
  private:
   using ConnectionMap = std::unordered_map<uint64_t, std::shared_ptr<TcpConnection>>;
   void NewConnection(Socket sock, AddrIpv4 addr);
+  int GetNextLoopId() const;
 
   EventLoop *reactor_;
   Acceptor acceptor_;
@@ -44,6 +46,8 @@ class TcpConnectionManager {
   OnConnectionCallBack on_connection_callback_;
   std::mutex mu_;
   int thread_num_;
+  std::vector<EventLoop *> sub_reactors_;
+  std::vector<std::thread> loop_threads_;
 };
 
 #endif //HAILMAKER_HTTPSERVER_NET_TCP_CONNECTION_MANAGER_H_

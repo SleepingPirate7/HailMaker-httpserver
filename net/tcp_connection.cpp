@@ -9,14 +9,20 @@
 #include "tcp_connection.h"
 #include "tcp_connection_manager.h"
 
-TcpConnection::TcpConnection(uint64_t id, Socket sock, AddrIpv4 addr, EventLoop *loop, TcpConnectionManager *manager)
+TcpConnection::TcpConnection(uint64_t id,
+                             Socket sock,
+                             AddrIpv4 addr,
+                             EventLoop *loop,
+                             TcpConnectionManager *manager,
+                             int loop_id)
     : id_(id),
       sock_(sock),
       peer_addr_(addr),
       loop_(loop),
       channel_(loop_, sock_.GetFd()),
       statue_(Connecting),
-      manager_(manager) {
+      manager_(manager),
+      loop_id_(loop_id) {
   channel_.SetReadCallBack(std::bind(&TcpConnection::HandleRead, this));
   channel_.SetWriteCallBack(std::bind(&TcpConnection::HandleWrite, this));
 }
@@ -35,24 +41,25 @@ void TcpConnection::CloseConnection() {
 }
 
 void TcpConnection::HandleRead() {
-  LOG_DEBUG("[ID:%lu]TcpConnection::HandleRead()", id_);
+  LOG_DEBUG("thread:%d handleRead on connection %d", loop_id_, id_);
+//  LOG_DEBUG("[ID:%lu]TcpConnection::HandleRead()", id_);
   if (statue_ != Closed) {
     if (statue_ == Closing) {
-      LOG_DEBUG("[ID:%lu]TcpConnection::HandleRead()  statue == closing", id_);
+      //LOG_DEBUG("[ID:%lu]TcpConnection::HandleRead()  statue == closing", id_);
       if (output_buf_.Empty()) {
-        LOG_DEBUG("[ID:%lu]TcpConnection::HandleRead()  close all", id_);
+        //LOG_DEBUG("[ID:%lu]TcpConnection::HandleRead()  close all", id_);
         CloseAll();
       }
     } else {
       auto n = input_buf_.ReadFd(sock_.GetFd());
       if (n > 0) {
-        LOG_DEBUG("[ID:%lu]TcpConnection::HandleRead()  read %lu bytes", id_, n);
+        //LOG_DEBUG("[ID:%lu]TcpConnection::HandleRead()  read %lu bytes", id_, n);
         on_message_callback_(shared_from_this(), &input_buf_);
       } else if (n == 0) {
-        LOG_DEBUG("[ID:%lu]TcpConnection::HandleRead()  client closed the connection", id_);
+        //LOG_DEBUG("[ID:%lu]TcpConnection::HandleRead()  client closed the connection", id_);
         CloseConnection();
       } else {
-        LOG_ERROR("[ID:%lu]TcpConnection::HandleRead()  encounter error.close the connection", id_);
+        //LOG_ERROR("[ID:%lu]TcpConnection::HandleRead()  encounter error.close the connection", id_);
         CloseConnection();
       }
     }
@@ -61,6 +68,7 @@ void TcpConnection::HandleRead() {
 
 void TcpConnection::Send(char *msg, size_t len) {
   // TODO
+  // std::this_thread::sleep_for(std::chrono::seconds(5));
   if (statue_ == Closing || statue_ == Closed) {
     LOG_ERROR("[ID:%lu]TcpConnection::Send  the connection is already closed.Cannot send more data", id_);
   } else {
